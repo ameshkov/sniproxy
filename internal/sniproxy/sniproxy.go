@@ -1,6 +1,7 @@
-// Package sniproxy is responsible for the SNI proxy that will listen for
-// incoming TLS connections, read the server name from the SNI field of
-// ClientHello and tunnel them to the respective hosts.
+// Package sniproxy is responsible for the SNI and plain HTTP proxy that will
+// listen for incoming TLS/HTTP connections, read the server name either from
+// the SNI field of ClientHello or from the HTTP Host header, and tunnel traffic
+// to the respective hosts.
 package sniproxy
 
 import (
