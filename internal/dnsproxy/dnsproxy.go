@@ -8,9 +8,8 @@ import (
 	"net"
 	"strings"
 
-	"github.com/AdguardTeam/golibs/log"
-
 	"github.com/AdguardTeam/dnsproxy/proxy"
+	"github.com/AdguardTeam/golibs/log"
 	"github.com/IGLOU-EU/go-wildcard"
 	"github.com/miekg/dns"
 )

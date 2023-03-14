@@ -17,10 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/IGLOU-EU/go-wildcard"
-
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/AdguardTeam/golibs/netutil"
+	"github.com/IGLOU-EU/go-wildcard"
 	"golang.org/x/net/proxy"
 )
 

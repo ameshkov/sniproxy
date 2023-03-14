@@ -4,10 +4,9 @@ import (
 	"net"
 	"net/netip"
 
-	"github.com/ameshkov/sniproxy/internal/sniproxy"
-
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/ameshkov/sniproxy/internal/dnsproxy"
+	"github.com/ameshkov/sniproxy/internal/sniproxy"
 )
 
 // toDNSProxyConfig converts command-line arguments to [*dnsproxy.Config] or

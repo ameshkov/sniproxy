@@ -7,10 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ameshkov/sniproxy/internal/sniproxy"
-
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/ameshkov/sniproxy/internal/dnsproxy"
+	"github.com/ameshkov/sniproxy/internal/sniproxy"
 	goFlags "github.com/jessevdk/go-flags"
 )
 
