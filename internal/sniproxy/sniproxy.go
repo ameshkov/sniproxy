@@ -22,6 +22,8 @@ import (
 	"github.com/AdguardTeam/golibs/netutil"
 	"github.com/IGLOU-EU/go-wildcard"
 	"golang.org/x/net/proxy"
+
+	_ "github.com/ameshkov/sniproxy/internal/httpupstream"
 )
 
 const (
@@ -264,11 +266,20 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 	return false
 }
 
+type writeCloser interface {
+	CloseWrite() error
+}
+
 // copy copies data from src to dst and signals that the work is done via the
 // wg wait group.
 func tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written int64) {
 	defer func() {
-		_ = dst.(*net.TCPConn).CloseWrite()
+		switch c := dst.(type) {
+		case writeCloser:
+			_ = c.CloseWrite()
+		default:
+			_ = c.Close()
+		}
 	}()
 
 	written, err := io.Copy(dst, src)

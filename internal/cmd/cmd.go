@@ -10,18 +10,15 @@ import (
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/ameshkov/sniproxy/internal/dnsproxy"
 	"github.com/ameshkov/sniproxy/internal/sniproxy"
+	"github.com/ameshkov/sniproxy/internal/version"
 	goFlags "github.com/jessevdk/go-flags"
 )
-
-// VersionString is the version that we'll print to the output. See the makefile
-// for more details.
-var VersionString = "undefined"
 
 // Main is the entry point of the program.Ï
 func Main() {
 	for _, arg := range os.Args {
 		if arg == "--version" {
-			fmt.Printf("sniproxy version: %s\n", VersionString)
+			fmt.Printf("sniproxy version: %s\n", version.VersionString)
 			os.Exit(0)
 		}
 	}
