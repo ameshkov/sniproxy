@@ -4,8 +4,8 @@ Proxies incoming HTTP and TLS connections based on the hostname that is parsed
 from either HTTP Host header (for plain HTTP connections) or TLS ClientHello.
 
 This allows transparent proxying of the network traffic by simply rerouting
-connections to the `sniproxy`. There are many ways to re-route the traffic, but
-most often it is done either on the DNS level or by using `iptables`.
+connections to the `sniproxy`. There are many ways to re-route traffic, but most
+often it is done either on the DNS level or by using `iptables`.
 
 ## Features
 
@@ -43,7 +43,7 @@ most often it is done either on the DNS level or by using `iptables`.
   ```
 
   Not every curl version supports `--dns-servers`. Alternatively, use these
-  command:
+  commands:
   ```shell
   curl "https://example.org/" --connect-to example.org:443:127.0.0.1:443
   curl "http://example.org/" --connect-to example.org:80:127.0.0.1:80
@@ -64,8 +64,8 @@ sudo sniproxy \
 
 Now every connection will be re-routed to the SOCKS5 proxy on `127.0.0.1:1080`.
 
-You can limit which domains are re-routed. For instance, here only `example.org`
-and `example.com` will be re-routed through the SOCKS5 proxy:
+You can choose which domains are re-routed. For instance, here only `example.
+org` and `example.com` will be re-routed through the SOCKS5 proxy:
 
 ```shell
 sudo sniproxy \
@@ -118,7 +118,7 @@ Help Options:
 
 ## Debugging locally
 
-If you want to contribute to `sniproxy`, here are some tips how to debug it
+If you want to contribute to `sniproxy`, here are some tips on how to debug it
 locally.
 
 First, you rarely want to run with `sudo` and instead you'd prefer to use high
