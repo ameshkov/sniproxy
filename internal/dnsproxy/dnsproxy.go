@@ -29,7 +29,7 @@ type DNSProxy struct {
 // type check
 var _ io.Closer = (*DNSProxy)(nil)
 
-// New creates an instance of a DNSProxy.
+// New creates a new instance of *DNSProxy.
 func New(cfg *Config) (d *DNSProxy, err error) {
 	proxyConfig, err := createProxyConfig(cfg)
 	if err != nil {

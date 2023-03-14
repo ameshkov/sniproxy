@@ -61,7 +61,7 @@ type SNIProxy struct {
 // type check
 var _ io.Closer = (*SNIProxy)(nil)
 
-// New creates an instance of a SNIProxy.
+// New creates a new instance of *SNIProxy.
 func New(cfg *Config) (d *SNIProxy, err error) {
 	dialer := &net.Dialer{
 		Timeout:  connectionTimeout,
