@@ -199,7 +199,7 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 
 	backendConn, err := p.dial(ctx)
 	if err != nil {
-		return fmt.Errorf("sniproxy: [%d] failed to connect to %s: %w", ctx.ID, remoteAddr, err)
+		return fmt.Errorf("sniproxy: [%d] failed to connect to %s: %w", ctx.ID, ctx.RemoteAddr, err)
 	}
 	defer log.OnCloserError(backendConn, log.DEBUG)
 
@@ -251,7 +251,7 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 	}
 
 	if len(p.forwardRules) == 0 {
-		// forward all connections
+		// forward all connections if there are no rules.
 		return true
 	}
 

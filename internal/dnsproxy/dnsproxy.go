@@ -76,8 +76,12 @@ func (d *DNSProxy) Close() (err error) {
 func (d *DNSProxy) requestHandler(p *proxy.Proxy, ctx *proxy.DNSContext) (err error) {
 	qName := strings.ToLower(ctx.Req.Question[0].Name)
 	qType := ctx.Req.Question[0].Qtype
+
+	log.Debug("dnsproxy: received DNS query %s %s", dns.Type(qType), qName)
+
 	if qType != dns.TypeA && qType != dns.TypeAAAA {
-		// Doing nothing with the request
+		// Doing nothing with the request if it's not A/AAAA, we cannot
+		// rewrite them anyway.
 		return nil
 	}
 
@@ -99,6 +103,8 @@ func (d *DNSProxy) requestHandler(p *proxy.Proxy, ctx *proxy.DNSContext) (err er
 func (d *DNSProxy) rewrite(qName string, qType uint16, ctx *proxy.DNSContext) {
 	resp := &dns.Msg{}
 	resp.SetReply(ctx.Req)
+
+	log.Info("dnsproxy: rewriting DNS for %s %s", dns.Type(qType), qName)
 
 	hdr := dns.RR_Header{
 		Name:   qName,
