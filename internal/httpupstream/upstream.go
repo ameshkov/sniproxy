@@ -103,7 +103,7 @@ func (d *HTTPProxyDialer) DialContext(ctx context.Context, network, address stri
 		case <-stopGuardEvent:
 			close(guardErr)
 		case <-ctx.Done():
-			conn.Close()
+			_ = conn.Close()
 			guardErr <- ctx.Err()
 		}
 	}()
@@ -123,13 +123,13 @@ func (d *HTTPProxyDialer) DialContext(ctx context.Context, network, address stri
 	fmt.Fprintf(&reqBuf, "User-Agent: sniproxy/%s\r\n\r\n", version.VersionString)
 	_, err = io.Copy(conn, &reqBuf)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return nil, fmt.Errorf("unable to write proxy request for remote connection: %w", err)
 	}
 
 	resp, err := readResponse(conn)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return nil, fmt.Errorf("reading proxy response failed: %w", err)
 	}
 
