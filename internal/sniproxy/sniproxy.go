@@ -114,8 +114,8 @@ func (p *SNIProxy) Start() (err error) {
 		return fmt.Errorf("sniproxy: failed to start SNIProxy: %w", err)
 	}
 
-	go p.acceptSNILoop(p.sniListener, false)
-	go p.acceptSNILoop(p.plainListener, true)
+	go p.acceptLoop(p.sniListener, false)
+	go p.acceptLoop(p.plainListener, true)
 
 	log.Info("sniproxy: started successfully")
 
@@ -136,9 +136,9 @@ func (p *SNIProxy) Close() (err error) {
 	return errors.Join(sniErr, plainErr)
 }
 
-// acceptSNILoop accepts incoming TCP connections and starts goroutines processing
+// acceptLoop accepts incoming TCP connections and starts goroutines processing
 // them.
-func (p *SNIProxy) acceptSNILoop(l net.Listener, plainHTTP bool) {
+func (p *SNIProxy) acceptLoop(l net.Listener, plainHTTP bool) {
 	if plainHTTP {
 		log.Info("sniproxy: listening for HTTP connections on %s", l.Addr())
 	} else {
