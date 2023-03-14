@@ -45,9 +45,9 @@ type Options struct {
 	// TLSPort is the port the SNI proxy server will be listening to.
 	TLSPort int `long:"tls-port" description:"Port the SNI proxy server will be listening for TLS connections." default:"443"`
 
-	// ForwardProxy is the address of a SOCKS proxy that the connections will
+	// ForwardProxy is the address of a SOCKS/HTTP/HTTPS proxy that the connections will
 	// be forwarded to according to ForwardRules.
-	ForwardProxy string `long:"forward-proxy" description:"Address of a SOCKS proxy that the connections will be forwarded to according to forward-rule."`
+	ForwardProxy string `long:"forward-proxy" description:"Address of a SOCKS/HTTP/HTTPS proxy that the connections will be forwarded to according to forward-rule."`
 
 	// ForwardRules is a list of wildcards that define what connections will be
 	// forwarded to ForwardProxy.  If the list is empty and ForwardProxy is set,
