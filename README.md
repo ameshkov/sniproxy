@@ -34,7 +34,7 @@ most often it is done either on the DNS level or by using `iptables`.
 
 * Run `sniproxy` and rewrite DNS responses to point to `1.2.3.4`:
   ```shell
-  sudo ./sniproxy --dns-redirect-ipv4-to=1.2.3.4
+  sudo sniproxy --dns-redirect-ipv4-to=1.2.3.4
   ```
 * You can test locally it with the following commands:
   ```shell
@@ -57,7 +57,7 @@ most often it is done either on the DNS level or by using `iptables`.
 Run `sniproxy`, rewrite DNS responses to point to `1.2.3.4`, :
 
 ```shell
-sudo ./sniproxy \
+sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
     --forward-proxy="socks5://127.0.0.1:1080"
 ```
@@ -68,7 +68,7 @@ You can limit which domains are re-routed. For instance, here only `example.org`
 and `example.com` will be re-routed through the SOCKS5 proxy:
 
 ```shell
-sudo ./sniproxy \
+sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
     --forward-proxy="socks5://127.0.0.1:1080" \
     --forward-rule=example.org \
@@ -80,7 +80,7 @@ sudo ./sniproxy \
 You may want to block access to some domains. Here's how to do it:
 
 ```shell
-sudo ./sniproxy \
+sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
     --forward-rule=example.org \
     --forward-rule=example.com
