@@ -52,7 +52,7 @@ often it is done either on the DNS level or by using `iptables`.
 * Now you should just point your device to the DNS server that is running on
   your computer.
 
-### Forward all traffic to a SOCKS proxy
+### Forward all traffic to a proxy
 
 Run `sniproxy`, rewrite DNS responses to point to `1.2.3.4`, :
 
@@ -71,6 +71,15 @@ org` and `example.com` will be re-routed through the SOCKS5 proxy:
 sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
     --forward-proxy="socks5://127.0.0.1:1080" \
+    --forward-rule=example.org \
+    --forward-rule=example.com
+```
+
+It also supports HTTP and HTTPS proxies. Here's an example:
+```shell
+sudo sniproxy \
+    --dns-redirect-ipv4-to=1.2.3.4 \
+    --forward-proxy="http://127.0.0.1:8080" \
     --forward-rule=example.org \
     --forward-rule=example.com
 ```

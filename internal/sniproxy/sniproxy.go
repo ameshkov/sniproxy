@@ -23,6 +23,7 @@ import (
 	"github.com/IGLOU-EU/go-wildcard"
 	"golang.org/x/net/proxy"
 
+	// Imported in order to register HTTP and HTTPS proxies.
 	_ "github.com/ameshkov/sniproxy/internal/httpupstream"
 )
 
@@ -181,9 +182,15 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 		return fmt.Errorf("sniproxy: failed to remove read deadline: %w", err)
 	}
 
-	remotePort := remotePortTLS
-	if plainHTTP {
+	// Sometimes, the server name may contain both host and port, consider this
+	// case.
+	hostname, remotePort, err := netutil.SplitHostPort(serverName)
+	if err == nil {
+		serverName = hostname
+	} else if plainHTTP {
 		remotePort = remotePortPain
+	} else {
+		remotePort = remotePortTLS
 	}
 
 	remoteAddr := netutil.JoinHostPort(serverName, remotePort)
@@ -274,6 +281,8 @@ type writeCloser interface {
 // wg wait group.
 func tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written int64) {
 	defer func() {
+		// In the case of HTTPS proxy the dst could be tls.Conn that does not
+		// have CloseWrite function.
 		switch c := dst.(type) {
 		case writeCloser:
 			_ = c.CloseWrite()
