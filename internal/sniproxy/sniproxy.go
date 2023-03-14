@@ -22,6 +22,8 @@ import (
 	"github.com/AdguardTeam/golibs/netutil"
 	"github.com/IGLOU-EU/go-wildcard"
 	"golang.org/x/net/proxy"
+
+	_ "github.com/ameshkov/sniproxy/internal/httpupstream"
 )
 
 const (
