@@ -37,7 +37,7 @@ const (
 
 	// remotePortPlain is the port the proxy will be connecting for plain HTTP
 	// connections.
-	remotePortPain = 80
+	remotePortPlain = 80
 
 	// remotePortTLS is the port the proxy will be connecting to for TLS
 	// connection.
@@ -192,7 +192,7 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 	if err == nil {
 		serverName = hostname
 	} else if plainHTTP {
-		remotePort = remotePortPain
+		remotePort = remotePortPlain
 	} else {
 		remotePort = remotePortTLS
 	}
@@ -278,7 +278,7 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 }
 
 // closeWriter is a helper interface which only purpose is to check if the
-// object has CloseWrite function or not.
+// object has CloseWrite function or not and call it if it exists.
 type closeWriter interface {
 	CloseWrite() error
 }
@@ -287,8 +287,9 @@ type closeWriter interface {
 // wg wait group.
 func (p *SNIProxy) tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written int64) {
 	defer func() {
-		// In the case of HTTPS proxy the dst could be tls.Conn that does not
-		// have CloseWrite function.
+		// In the case of *tcp.Conn and *tls.Conn we should call CloseWriter, so
+		// we're using closeWriter interface to check for that function
+		// presence.
 		switch c := dst.(type) {
 		case closeWriter:
 			_ = c.CloseWrite()
