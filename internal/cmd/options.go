@@ -45,6 +45,10 @@ type Options struct {
 	// TLSPort is the port the SNI proxy server will be listening to.
 	TLSPort int `long:"tls-port" description:"Port the SNI proxy server will be listening for TLS connections." default:"443"`
 
+	// BandwidthRate is a number of bytes per second the connections speed will
+	// be limited to.  If not set, there is no limit.
+	BandwidthRate float64 `long:"bandwidth-rate" description:"Bytes per second the connections speed will be limited to. If not set, there is no limit." default:"0"`
+
 	// ForwardProxy is the address of a SOCKS/HTTP/HTTPS proxy that the connections will
 	// be forwarded to according to ForwardRules.
 	ForwardProxy string `long:"forward-proxy" description:"Address of a SOCKS/HTTP/HTTPS proxy that the connections will be forwarded to according to forward-rule."`

@@ -21,6 +21,7 @@ import (
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/AdguardTeam/golibs/netutil"
 	"github.com/IGLOU-EU/go-wildcard"
+	"github.com/fujiwara/shapeio"
 	"golang.org/x/net/proxy"
 
 	// Imported in order to register HTTP and HTTPS proxies.
@@ -59,6 +60,8 @@ type SNIProxy struct {
 
 	forwardRules []string
 	blockRules   []string
+
+	bandwidthRate float64
 }
 
 // type check
@@ -100,6 +103,7 @@ func New(cfg *Config) (d *SNIProxy, err error) {
 		proxyDialer:    proxyDialer,
 		forwardRules:   cfg.ForwardRules,
 		blockRules:     cfg.BlockRules,
+		bandwidthRate:  cfg.BandwidthRate,
 	}, nil
 }
 
@@ -220,12 +224,12 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 	go func() {
 		defer wg.Done()
 
-		bytesReceived = tunnel(ctx, clientConn, backendConn)
+		bytesReceived = p.tunnel(ctx, clientConn, backendConn)
 	}()
 	go func() {
 		defer wg.Done()
 
-		bytesSent = tunnel(ctx, backendConn, clientReader)
+		bytesSent = p.tunnel(ctx, backendConn, clientReader)
 	}()
 
 	wg.Wait()
@@ -273,25 +277,34 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 	return false
 }
 
-type writeCloser interface {
+// closeWriter is a helper interface which only purpose is to check if the
+// object has CloseWrite function or not.
+type closeWriter interface {
 	CloseWrite() error
 }
 
 // copy copies data from src to dst and signals that the work is done via the
 // wg wait group.
-func tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written int64) {
+func (p *SNIProxy) tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written int64) {
 	defer func() {
 		// In the case of HTTPS proxy the dst could be tls.Conn that does not
 		// have CloseWrite function.
 		switch c := dst.(type) {
-		case writeCloser:
+		case closeWriter:
 			_ = c.CloseWrite()
 		default:
 			_ = c.Close()
 		}
 	}()
 
-	written, err := io.Copy(dst, src)
+	reader := shapeio.NewReader(src)
+	writer := shapeio.NewWriter(dst)
+	if p.bandwidthRate > 0 {
+		reader.SetRateLimit(p.bandwidthRate)
+		writer.SetRateLimit(p.bandwidthRate)
+	}
+
+	written, err := io.Copy(writer, reader)
 
 	if err != nil {
 		log.Debug("sniproxy: [%d] finished copying due to %v", ctx.ID, err)

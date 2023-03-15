@@ -94,9 +94,10 @@ func toSNIProxyConfig(options *Options) (cfg *sniproxy.Config) {
 			IP:   plainIP,
 			Port: options.HTTPPort,
 		},
-		ForwardProxy: options.ForwardProxy,
-		ForwardRules: options.ForwardRules,
-		BlockRules:   options.BlockRules,
+		ForwardProxy:  options.ForwardProxy,
+		ForwardRules:  options.ForwardRules,
+		BlockRules:    options.BlockRules,
+		BandwidthRate: options.BandwidthRate,
 	}
 
 	return cfg

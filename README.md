@@ -114,6 +114,7 @@ Application Options:
       --http-port=            Port the SNI proxy server will be listening for plain HTTP connections. (default: 80)
       --tls-address=          IP address the SNI proxy server will be listening for TLS connections. (default: 0.0.0.0)
       --tls-port=             Port the SNI proxy server will be listening for TLS connections. (default: 443)
+      --bandwidth-rate=       Bytes per second the connections speed will be limited to. If not set, there is no limit. (default: 0)
       --forward-proxy=        Address of a SOCKS/HTTP/HTTPS proxy that the connections will be forwarded to according to forward-rule.
       --forward-rule=         Wildcard that defines what connections will be forwarded to forward-proxy. Can be specified multiple
                               times. If no rules are specified, all connections will be forwarded to the proxy.
