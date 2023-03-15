@@ -46,8 +46,14 @@ type Options struct {
 	TLSPort int `long:"tls-port" description:"Port the SNI proxy server will be listening for TLS connections." default:"443"`
 
 	// BandwidthRate is a number of bytes per second the connections speed will
-	// be limited to.  If not set, there is no limit.
+	// be limited to.  Note, that the speed is shared between all connections.
+	// If not set, there is no limit.
 	BandwidthRate float64 `long:"bandwidth-rate" description:"Bytes per second the connections speed will be limited to. If not set, there is no limit." default:"0"`
+
+	// BandwidthRules is a map that allows to define connection speed for
+	// domains that match the wildcards.  Has higher priority than
+	// BandwidthRate.
+	BandwidthRules map[string]float64 `long:"bandwidth-rule" description:"Allows to define connection speed in bytes/sec for domains that match the wildcard. Example: example.*:1024. Can be specified multiple times."`
 
 	// ForwardProxy is the address of a SOCKS/HTTP/HTTPS proxy that the connections will
 	// be forwarded to according to ForwardRules.

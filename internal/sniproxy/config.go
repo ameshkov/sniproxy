@@ -30,4 +30,9 @@ type Config struct {
 	// BandwidthRate is a number of bytes per second the connections speed will
 	// be limited to.  If not set, there is no limit.
 	BandwidthRate float64
+
+	// BandwidthRules is a map that allows to define connection speed for
+	// domains that match the wildcards.  Has higher priority than
+	// BandwidthRate.
+	BandwidthRules map[string]float64
 }

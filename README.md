@@ -107,6 +107,14 @@ sudo sniproxy \
     --bandwidth-rate=1000
 ```
 
+You can also throttle connections to individual domains using `bandwidth-rule`.
+
+```shell
+sudo sniproxy \
+    --dns-redirect-ipv4-to=1.2.3.4 \
+    --bandwidth-rule="example.*:5000"
+```
+
 ### Command-line arguments
 
 ```shell
@@ -127,6 +135,8 @@ Application Options:
       --tls-address=          IP address the SNI proxy server will be listening for TLS connections. (default: 0.0.0.0)
       --tls-port=             Port the SNI proxy server will be listening for TLS connections. (default: 443)
       --bandwidth-rate=       Bytes per second the connections speed will be limited to. If not set, there is no limit. (default: 0)
+      --bandwidth-rule=       Allows to define connection speed in bytes/sec for domains that match the wildcard. Example:
+                              example.*:1024. Can be specified multiple times.
       --forward-proxy=        Address of a SOCKS/HTTP/HTTPS proxy that the connections will be forwarded to according to forward-rule.
       --forward-rule=         Wildcard that defines what connections will be forwarded to forward-proxy. Can be specified multiple
                               times. If no rules are specified, all connections will be forwarded to the proxy.

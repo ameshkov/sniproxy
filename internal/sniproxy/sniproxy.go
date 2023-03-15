@@ -21,8 +21,9 @@ import (
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/AdguardTeam/golibs/netutil"
 	"github.com/IGLOU-EU/go-wildcard"
-	"github.com/fujiwara/shapeio"
+	"github.com/ameshkov/sniproxy/internal/shapeio"
 	"golang.org/x/net/proxy"
+	"golang.org/x/time/rate"
 
 	// Imported in order to register HTTP and HTTPS proxies.
 	_ "github.com/ameshkov/sniproxy/internal/httpupstream"
@@ -61,7 +62,8 @@ type SNIProxy struct {
 	forwardRules []string
 	blockRules   []string
 
-	bandwidthRate float64
+	limiter        *rate.Limiter
+	bandwidthRules map[string]float64
 }
 
 // type check
@@ -96,6 +98,14 @@ func New(cfg *Config) (d *SNIProxy, err error) {
 		}
 	}
 
+	var limiter *rate.Limiter
+
+	if cfg.BandwidthRate > 0 {
+		limiter = rate.NewLimiter(rate.Limit(cfg.BandwidthRate), 1000_000_000)
+		// spend initial burst.
+		limiter.AllowN(time.Now(), 1000_000_000)
+	}
+
 	return &SNIProxy{
 		tlsListenAddr:  cfg.TLSListenAddr,
 		httpListenAddr: cfg.HTTPListenAddr,
@@ -103,7 +113,8 @@ func New(cfg *Config) (d *SNIProxy, err error) {
 		proxyDialer:    proxyDialer,
 		forwardRules:   cfg.ForwardRules,
 		blockRules:     cfg.BlockRules,
-		bandwidthRate:  cfg.BandwidthRate,
+		limiter:        limiter,
+		bandwidthRules: cfg.BandwidthRules,
 	}, nil
 }
 
@@ -216,6 +227,8 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 	}
 	defer log.OnCloserError(backendConn, log.DEBUG)
 
+	startTime := time.Now()
+
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -234,12 +247,18 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 
 	wg.Wait()
 
+	elapsed := time.Now().Sub(startTime)
+	bandwidthRate := float64(bytesReceived+bytesSent) / elapsed.Seconds()
+
 	log.Info(
-		"sniproxy: [%d] finished tunneling to %s. received %d, sent %d",
+		"sniproxy: [%d] finished tunneling to %s. received %d, sent %d, elapsed: %v, "+
+			"rate (bytes/sec): %f",
 		ctx.ID,
 		remoteAddr,
 		bytesReceived,
 		bytesSent,
+		elapsed,
+		bandwidthRate,
 	)
 
 	return nil
@@ -298,11 +317,19 @@ func (p *SNIProxy) tunnel(ctx *SNIContext, dst net.Conn, src io.Reader) (written
 		}
 	}()
 
-	reader := shapeio.NewReader(src)
-	writer := shapeio.NewWriter(dst)
-	if p.bandwidthRate > 0 {
-		reader.SetRateLimit(p.bandwidthRate)
-		writer.SetRateLimit(p.bandwidthRate)
+	var reader = shapeio.NewReader(src, p.limiter)
+	var writer = shapeio.NewWriter(dst, p.limiter)
+
+	for k, v := range p.bandwidthRules {
+		if wildcard.MatchSimple(k, ctx.RemoteHost) {
+			log.Debug(
+				"sniproxy: [%d] limiting speed to %f bytes/sec",
+				ctx.ID,
+				v,
+			)
+			reader.SetRateLimit(v)
+			writer.SetRateLimit(v)
+		}
 	}
 
 	written, err := io.Copy(writer, reader)
