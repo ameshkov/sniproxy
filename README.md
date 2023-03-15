@@ -12,7 +12,8 @@ often it is done either on the DNS level or by using `iptables`.
 * Embedded DNS server that can be used to redirect traffic to the proxy.
 * Supports both TLS and plain HTTP.
 * Supports forwarding connections to an upstream SOCKS proxy.
-* Flexible rules for redirecting, forwarding and blocking connections.
+* Flexible rules for redirecting, forwarding, blocking or throttling
+  connections.
 * Cross-platform and simple.
 
 ## How to install
@@ -93,6 +94,17 @@ sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
     --forward-rule=example.org \
     --forward-rule=example.com
+```
+
+### Throttle connections
+
+If you need to emulate slow network, use `bandwidth-rate` to set the desired
+bytes-per-sec rate.
+
+```shell
+sudo sniproxy \
+    --dns-redirect-ipv4-to=1.2.3.4 \
+    --bandwidth-rate=1000
 ```
 
 ### Command-line arguments
