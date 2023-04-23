@@ -66,7 +66,12 @@ type Options struct {
 
 	// BlockRules is a list of wildcards that define connections to which hosts
 	// will be blocked.
-	BlockRules []string `long:"block-rule" description:"Wildcard that defines what domains should be blocked. Can be specified multiple times."`
+	BlockRules []string `long:"block-rule" description:"Wildcard that defines connections to which domains should be blocked. Can be specified multiple times."`
+
+	// DropRules is a list of wildcards that define connections to which hosts
+	// will be "dropped".  "Dropped" means that the connection will be delayed
+	// for a hard-coded period of 3 minutes.
+	DropRules []string `long:"drop-rule" description:"Wildcard that defines connections to which domains should be dropped (i.e. delayed for a hard-coded period of 3 minutes. Can be specified multiple times."`
 
 	// Log settings
 	// --

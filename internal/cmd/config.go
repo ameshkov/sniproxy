@@ -97,6 +97,7 @@ func toSNIProxyConfig(options *Options) (cfg *sniproxy.Config) {
 		ForwardProxy:  options.ForwardProxy,
 		ForwardRules:  options.ForwardRules,
 		BlockRules:    options.BlockRules,
+		DropRules:     options.DropRules,
 		BandwidthRate: options.BandwidthRate,
 	}
 

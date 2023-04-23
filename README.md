@@ -87,13 +87,20 @@ sudo sniproxy \
 
 ### Block domains
 
-You may want to block access to some domains. Here's how to do it:
+You may want to block access to some domains.  There are two options of how it
+can be done: `--block-rule` or `--drop-rule`.  If the connection matches a
+`--block-rule`, the connection will be closed immediately.  If the connection
+matches a `--drop-rule`, the connection will "hang" for a hard-coded limit of
+3 minutes before it will be closed.
+
+Here's how block or drop connections to domains:
 
 ```shell
 sudo sniproxy \
     --dns-redirect-ipv4-to=1.2.3.4 \
-    --forward-rule=example.org \
-    --forward-rule=example.com
+    --block-rule=example.org \
+    --block-rule=example.com \
+    --drop-rule=example.net
 ```
 
 ### Throttle connections

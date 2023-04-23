@@ -36,6 +36,10 @@ const (
 	// connectionTimeout is a timeout for connecting to a remote host.
 	connectionTimeout = 10 * time.Second
 
+	// dropPeriod is a period of time the proxy waits before closing the
+	// connection if there is a matching "drop rule".
+	dropPeriod = 3 * time.Minute
+
 	// remotePortPlain is the port the proxy will be connecting for plain HTTP
 	// connections.
 	remotePortPlain = 80
@@ -61,6 +65,7 @@ type SNIProxy struct {
 
 	forwardRules []string
 	blockRules   []string
+	dropRules    []string
 
 	limiter        *rate.Limiter
 	bandwidthRules map[string]float64
@@ -113,6 +118,7 @@ func New(cfg *Config) (d *SNIProxy, err error) {
 		proxyDialer:    proxyDialer,
 		forwardRules:   cfg.ForwardRules,
 		blockRules:     cfg.BlockRules,
+		dropRules:      cfg.DropRules,
 		limiter:        limiter,
 		bandwidthRules: cfg.BandwidthRules,
 	}, nil
@@ -213,12 +219,19 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 
 	log.Info("sniproxy: [%d] start tunneling to %s", ctx.ID, ctx.RemoteAddr)
 
-	for _, r := range p.blockRules {
-		if wildcard.MatchSimple(r, ctx.RemoteHost) {
-			log.Info("sniproxy: [%d] blocked connection to %s", ctx.ID, ctx.RemoteHost)
+	if p.matchesRules(ctx, p.blockRules) {
+		log.Info("sniproxy: [%d] blocked connection to %s", ctx.ID, ctx.RemoteHost)
 
-			return nil
-		}
+		return nil
+	}
+
+	if p.matchesRules(ctx, p.dropRules) {
+		log.Info("sniproxy: [%d] dropped connection to %s", ctx.ID, ctx.RemoteHost)
+
+		// Emulate the situation with a connection that was "dropped".
+		time.Sleep(dropPeriod)
+
+		return nil
 	}
 
 	backendConn, err := p.dial(ctx)
@@ -287,7 +300,13 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 		return true
 	}
 
-	for _, r := range p.forwardRules {
+	return p.matchesRules(ctx, p.forwardRules)
+}
+
+// matchesRules checks if the connection's host matches any of the specified
+// wildcards and returns true if there is a match.
+func (p *SNIProxy) matchesRules(ctx *SNIContext, rules []string) (ok bool) {
+	for _, r := range rules {
 		if wildcard.MatchSimple(r, ctx.RemoteHost) {
 			return true
 		}

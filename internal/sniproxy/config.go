@@ -27,6 +27,11 @@ type Config struct {
 	// will be blocked.
 	BlockRules []string
 
+	// DropRules is a list of wildcards that define connections to which hosts
+	// will be dropped. "Dropped" means that they will be delayed for a specific
+	// period of time.
+	DropRules []string
+
 	// BandwidthRate is a number of bytes per second the connections speed will
 	// be limited to.  If not set, there is no limit.
 	BandwidthRate float64
