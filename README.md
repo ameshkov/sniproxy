@@ -129,25 +129,48 @@ Usage:
   sniproxy [OPTIONS]
 
 Application Options:
-      --dns-address=          IP address that the DNS proxy server will be listening to. (default: 0.0.0.0)
-      --dns-port=             Port the DNS proxy server will be listening to. (default: 53)
-      --dns-upstream=         The address of the DNS server the proxy will forward queries that are not rewritten by sniproxy.
-                              (default: 8.8.8.8)
-      --dns-redirect-ipv4-to= IPv4 address that will be used for redirecting type A DNS queries.
-      --dns-redirect-ipv6-to= IPv6 address that will be used for redirecting type AAAA DNS queries.
-      --dns-redirect-rule=    Wildcard that defines which domains should be redirected to the SNI proxy. Can be specified multiple
-                              times. (default: *)
-      --http-address=         IP address the SNI proxy server will be listening for plain HTTP connections. (default: 0.0.0.0)
-      --http-port=            Port the SNI proxy server will be listening for plain HTTP connections. (default: 80)
-      --tls-address=          IP address the SNI proxy server will be listening for TLS connections. (default: 0.0.0.0)
-      --tls-port=             Port the SNI proxy server will be listening for TLS connections. (default: 443)
-      --bandwidth-rate=       Bytes per second the connections speed will be limited to. If not set, there is no limit. (default: 0)
-      --bandwidth-rule=       Allows to define connection speed in bytes/sec for domains that match the wildcard. Example:
+      --dns-address=          IP address that the DNS proxy server will be
+                              listening to. (default: 0.0.0.0)
+      --dns-port=             Port the DNS proxy server will be listening to.
+                              (default: 53)
+      --dns-upstream=         The address of the DNS server the proxy will
+                              forward queries that are not rewritten by
+                              sniproxy. (default: 8.8.8.8)
+      --dns-redirect-ipv4-to= IPv4 address that will be used for redirecting
+                              type A DNS queries.
+      --dns-redirect-ipv6-to= IPv6 address that will be used for redirecting
+                              type AAAA DNS queries.
+      --dns-redirect-rule=    Wildcard that defines which domains should be
+                              redirected to the SNI proxy. Can be specified
+                              multiple times. (default: *)
+      --http-address=         IP address the SNI proxy server will be listening
+                              for plain HTTP connections. (default: 0.0.0.0)
+      --http-port=            Port the SNI proxy server will be listening for
+                              plain HTTP connections. (default: 80)
+      --tls-address=          IP address the SNI proxy server will be listening
+                              for TLS connections. (default: 0.0.0.0)
+      --tls-port=             Port the SNI proxy server will be listening for
+                              TLS connections. (default: 443)
+      --bandwidth-rate=       Bytes per second the connections speed will be
+                              limited to. If not set, there is no limit.
+                              (default: 0)
+      --bandwidth-rule=       Allows to define connection speed in bytes/sec
+                              for domains that match the wildcard. Example:
                               example.*:1024. Can be specified multiple times.
-      --forward-proxy=        Address of a SOCKS/HTTP/HTTPS proxy that the connections will be forwarded to according to forward-rule.
-      --forward-rule=         Wildcard that defines what connections will be forwarded to forward-proxy. Can be specified multiple
-                              times. If no rules are specified, all connections will be forwarded to the proxy.
-      --block-rule=           Wildcard that defines what domains should be blocked. Can be specified multiple times.
+      --forward-proxy=        Address of a SOCKS/HTTP/HTTPS proxy that the
+                              connections will be forwarded to according to
+                              forward-rule.
+      --forward-rule=         Wildcard that defines what connections will be
+                              forwarded to forward-proxy. Can be specified
+                              multiple times. If no rules are specified, all
+                              connections will be forwarded to the proxy.
+      --block-rule=           Wildcard that defines connections to which
+                              domains should be blocked. Can be specified
+                              multiple times.
+      --drop-rule=            Wildcard that defines connections to which
+                              domains should be dropped (i.e. delayed for a
+                              hard-coded period of 3 minutes. Can be specified
+                              multiple times.
       --verbose               Verbose output (optional)
       --output=               Path to the log file. If not set, write to stdout.
 
