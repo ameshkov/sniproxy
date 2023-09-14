@@ -29,6 +29,10 @@ type Options struct {
 	// should be redirected to the SNI proxy.  Can be specified multiple times.
 	DNSRedirectRules []string `long:"dns-redirect-rule" description:"Wildcard that defines which domains should be redirected to the SNI proxy. Can be specified multiple times." default:"*"`
 
+	// DNSDropRules is a list of wildcards that define queries to which domains
+	// should be dropped.  Can be specified multiple times.
+	DNSDropRules []string `long:"dns-drop-rule" description:"Wildcard that defines DNS queries to which domains should be dropped. Can be specified multiple times."`
+
 	// HTTPListenAddress is the IP address the HTTP proxy server will be
 	// listening to.  Note, that the HTTP proxy will work pretty much the same
 	// way the SNI proxy works, i.e. it will tunnel traffic to the hostname

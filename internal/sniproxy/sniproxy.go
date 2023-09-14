@@ -21,6 +21,7 @@ import (
 	"github.com/AdguardTeam/golibs/log"
 	"github.com/AdguardTeam/golibs/netutil"
 	"github.com/IGLOU-EU/go-wildcard"
+	"github.com/ameshkov/sniproxy/internal/filter"
 	"github.com/ameshkov/sniproxy/internal/shapeio"
 	"golang.org/x/net/proxy"
 	"golang.org/x/time/rate"
@@ -219,13 +220,13 @@ func (p *SNIProxy) handleConnection(clientConn net.Conn, plainHTTP bool) (err er
 
 	log.Info("sniproxy: [%d] start tunneling to %s", ctx.ID, ctx.RemoteAddr)
 
-	if p.matchesRules(ctx, p.blockRules) {
+	if filter.MatchWildcards(ctx.RemoteHost, p.blockRules) {
 		log.Info("sniproxy: [%d] blocked connection to %s", ctx.ID, ctx.RemoteHost)
 
 		return nil
 	}
 
-	if p.matchesRules(ctx, p.dropRules) {
+	if filter.MatchWildcards(ctx.RemoteHost, p.dropRules) {
 		log.Info("sniproxy: [%d] dropped connection to %s", ctx.ID, ctx.RemoteHost)
 
 		// Emulate the situation with a connection that was "dropped".
@@ -300,19 +301,7 @@ func (p *SNIProxy) shouldForward(ctx *SNIContext) (ok bool) {
 		return true
 	}
 
-	return p.matchesRules(ctx, p.forwardRules)
-}
-
-// matchesRules checks if the connection's host matches any of the specified
-// wildcards and returns true if there is a match.
-func (p *SNIProxy) matchesRules(ctx *SNIContext, rules []string) (ok bool) {
-	for _, r := range rules {
-		if wildcard.MatchSimple(r, ctx.RemoteHost) {
-			return true
-		}
-	}
-
-	return false
+	return filter.MatchWildcards(ctx.RemoteHost, p.forwardRules)
 }
 
 // closeWriter is a helper interface which only purpose is to check if the

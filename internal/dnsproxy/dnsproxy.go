@@ -10,7 +10,7 @@ import (
 
 	"github.com/AdguardTeam/dnsproxy/proxy"
 	"github.com/AdguardTeam/golibs/log"
-	"github.com/IGLOU-EU/go-wildcard"
+	"github.com/ameshkov/sniproxy/internal/filter"
 	"github.com/miekg/dns"
 )
 
@@ -24,6 +24,7 @@ type DNSProxy struct {
 	redirectRules  []string
 	redirectIPv4To net.IP
 	redirectIPv6To net.IP
+	dropRules      []string
 }
 
 // type check
@@ -40,6 +41,7 @@ func New(cfg *Config) (d *DNSProxy, err error) {
 		redirectRules:  cfg.RedirectRules,
 		redirectIPv4To: cfg.RedirectIPv4To,
 		redirectIPv6To: cfg.RedirectIPv6To,
+		dropRules:      cfg.DropRules,
 	}
 	d.proxy = &proxy.Proxy{
 		Config: proxyConfig,
@@ -87,12 +89,17 @@ func (d *DNSProxy) requestHandler(p *proxy.Proxy, ctx *proxy.DNSContext) (err er
 
 	domainName := strings.TrimSuffix(qName, ".")
 
-	for _, r := range d.redirectRules {
-		if wildcard.MatchSimple(r, domainName) {
-			d.rewrite(qName, qType, ctx)
+	if filter.MatchWildcards(domainName, d.dropRules) {
+		// Return empty response, effectively "dropping" the query.
+		ctx.Res = nil
 
-			return nil
-		}
+		return nil
+	}
+
+	if filter.MatchWildcards(domainName, d.redirectRules) {
+		d.rewrite(qName, qType, ctx)
+
+		return nil
 	}
 
 	return p.Resolve(ctx)

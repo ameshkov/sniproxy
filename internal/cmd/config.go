@@ -21,6 +21,7 @@ func toDNSProxyConfig(options *Options) (cfg *dnsproxy.Config) {
 		ListenAddr:    addrPort,
 		Upstream:      options.DNSUpstream,
 		RedirectRules: options.DNSRedirectRules,
+		DropRules:     options.DNSDropRules,
 	}
 
 	if options.DNSRedirectIPV4To != "" {

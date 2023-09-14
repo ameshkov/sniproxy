@@ -24,4 +24,9 @@ type Config struct {
 	// RedirectRules is a list of wildcards that is used for checking which
 	// domains should be redirected.
 	RedirectRules []string
+
+	// DropRules is a list of wildcards that define DNS queries to which
+	// domains will be dropped. "Dropped" means that the DNS server will not
+	// respond to these queries.
+	DropRules []string
 }
