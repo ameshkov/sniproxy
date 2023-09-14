@@ -103,6 +103,18 @@ sudo sniproxy \
     --drop-rule=example.net
 ```
 
+### Drop DNS queries
+
+You may want to emulate the situation when DNS queries to specific domains are
+dropped.  Use `--dns-drop-rule` option to do this:
+
+```shell
+sudo sniproxy \
+    --dns-redirect-ipv4-to=1.2.3.4 \
+    --dns-drop-rule=example.net \
+    --dns-drop-rule=example.com
+```
+
 ### Throttle connections
 
 If you need to emulate slow network, use `bandwidth-rate` to set the desired

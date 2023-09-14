@@ -92,6 +92,7 @@ func (d *DNSProxy) requestHandler(p *proxy.Proxy, ctx *proxy.DNSContext) (err er
 	if filter.MatchWildcards(domainName, d.dropRules) {
 		// Return empty response, effectively "dropping" the query.
 		ctx.Res = nil
+		log.Info("dnsproxy: dropping DNS query for %s %s", dns.Type(qType), qName)
 
 		return nil
 	}
