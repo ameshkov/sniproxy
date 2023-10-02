@@ -173,7 +173,7 @@ func (p *SNIProxy) acceptLoop(l net.Listener, plainHTTP bool) {
 	for {
 		conn, err := l.Accept()
 		if err != nil && strings.Contains(err.Error(), "closed network connection") {
-			log.Info("sniproxy: existing listener loop as it has been closed")
+			log.Info("sniproxy: exiting listener loop as it has been closed")
 
 			return
 		}

@@ -14,7 +14,7 @@ import (
 	goFlags "github.com/jessevdk/go-flags"
 )
 
-// Main is the entry point of the program.Ï
+// Main is the entry point of the program.
 func Main() {
 	for _, arg := range os.Args {
 		if arg == "--version" {
